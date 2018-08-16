@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+    <script src="scripts/jquery.js"></script>
+    <script src="scripts/jquery.cookie.js"></script>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="group">
+            <label for="account">账号：</label>
+            <input id="account" type="text" placeholder="账号">
+        </div>
+
+        <div class="group">
+            <label for="password">密码：</label>
+            <input id="password" type="password" placeholder="密码">
+        </div>
+
+        <div class="group">
+            <input id="remember" type="checkbox">
+            <label for="remember">记住账号？</label>
+        </div>
+
+        <div class="group">
+            <button id="btnLogin">登录</button>
+        </div>
+    </div>
+
+    <script>
+        $(function(){
+            
+            var remember = $('#remember').prop('check');
+
+            var rememberFlag = $.cookie('remember');
+            if(rememberFlag){
+                $('#remember').prop("checked",true);
+                $('#account').val($.cookie('loginName'));
+            }
+
+            $('#btnLogin').on('click',function(){
+                // alert("123456");
+                var loginName = $.trim($('#account').val());
+                var password = $.trim($('#password').val());
+                var remember = $('#remember').prop('check');
+                
+                if(!loginName || !password){
+                    alert("账号和密码不能为空！");
+                    return;
+                }
+
+                
+                // console.log(remember);
+
+                // 参数1：接口地址，参数2：向服务器传递的数据，参数3：服务器响应成功时的回调函数,{loginName,password}是{loginName:loginName,password:password}的缩写
+                $.post("/api/login",{loginName,password},function(data){
+                    if(data.code != 200){
+                        alert(data.message);
+                        return;
+                    }
+
+                    if(remember){
+                        $.cookie("remember",true);
+                    }
+
+                    $.cookie("loginName",loginName);
+
+                    location.href = "/index.html";
+
+
+                    // console.log(data);
+                })
+            })
+        })
+    </script>
+</body>
+</html>
